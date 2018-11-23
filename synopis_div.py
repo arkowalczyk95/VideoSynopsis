@@ -1,5 +1,5 @@
 import cv2
-from divide import divide, merge
+from funcs import divide, merge
 
 vs = cv2.VideoCapture('Video1.mp4')
 fourcc = cv2.VideoWriter_fourcc(*'h264')
@@ -27,7 +27,7 @@ while True:
 
     blocks = divide(gray, height, width, num_block)
     blocks_first = divide(firstFrame, height, width, num_block)
-    for i in range (0, len(blocks)):
+    for i in range(0, len(blocks)):
         text = "Unoccupied"
         diff = cv2.absdiff(blocks_first[i], blocks[i])
         thresh = cv2.threshold(diff, 25, 255, cv2.THRESH_BINARY)[1]     #why

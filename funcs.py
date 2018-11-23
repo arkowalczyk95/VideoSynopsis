@@ -33,10 +33,18 @@ def merge(blocks, element_no):
 
 
 def addframes(frame1, frame2):
-    im1arrF = frame1.astype('uint16')
-    im2arrF = frame2.astype('uint16')
-    additionF = (im1arrF + im2arrF)
-    addition = additionF.astype('uint8')
+    im1 = frame1.astype('uint16')
+    im2 = frame2.astype('uint16')
+    add = (im1 + im2) // 2
+    addition = add.astype('uint8')
     return addition
 
 
+def changeto16(cos):
+    cos2 = cos.astype('uint16')
+    return cos2
+
+
+def changeto8(cos):
+    cos2 = cos.astype('uint8')
+    return cos2

@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
-from funcs import divide, merge, addframes
+from funcs import divide, merge, addframes, changeto8, changeto16
+from itertools import izip_longest
 
 vs = cv2.VideoCapture('video.mp4')
 fourcc = cv2.VideoWriter_fourcc(*'h264')
@@ -9,7 +10,7 @@ height = int(vs.get(4))
 fps = int(vs.get(cv2.CAP_PROP_FPS))
 
 obj = cv2.VideoWriter('Output.mp4', fourcc, fps, (width, height))
-# obj2 = cv2.VideoWriter('OutputSynopsis.mp4', fourcc, fps, (width, height))
+obj2 = cv2.VideoWriter('OutputSynopsis.mp4', fourcc, fps, (width, height))
 prevText = "Unoccupied"
 prevFrame = None
 synopsis = []
@@ -54,7 +55,7 @@ while True:
     cv2.putText(frame, "Status: {}".format(text), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
     # cv2.putText(frame, "Time: {}".format(time), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
-    cv2.imshow("Original", frame)
+    # cv2.imshow("Original", frame)
     # cv2.imshow("Threshold", thresh)
     # cv2.imshow("Absdiff", diff)
 
@@ -70,35 +71,24 @@ while True:
         break
 
 print len(moves)
-# print len(moves[0])
-# print len(moves[1])
-# print len(moves[2])
-# print len(moves[3])
 # # for frame in moves[0]:
 # #     obj.write(frame)
 for move in moves:
     movesLen.append(len(move))
 print movesLen
 maxMovesLen = max(movesLen)
-# for move in moves:
-#     while len(move) < maxMovesLen:
-#         move.append(firstColFrame)
-# movesLen = []
-# for move in moves:
-#     movesLen.append(len(move))
-# print movesLen
-#
-# one = moves[0]
-# two = moves[1]
-# three = moves[2]
-# four = moves[3]
-# for i in range(0, maxMovesLen):
-#     outp1 = addframes(one[i], two[i]) // 2
-#     outp2 = addframes(three[i], four[i]) // 2
-#     outp = addframes(outp1, outp2) // 2
-#     outp = outp
-#     obj2.write(outp)
-#print synMoves
+
+for i in range(0, len(moves)):
+    for l in range(0, len(moves[i])):
+        moves[i][l] = changeto16(moves[i][l])
+one = moves[0]
+for i in range(1, len(moves)):
+    one = [sum(x) for x in izip_longest(one, moves[i], fillvalue=0)]
+    if i == (len(moves) - 1):
+        for m in one:
+            m = m // len(moves)
+            m = changeto8(m)
+            obj2.write(m)
 
 obj.release()
 vs.release()
